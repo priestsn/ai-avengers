@@ -1,10 +1,11 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
+    const sql = neon(process.env.DATABASE_URL!);
     const result = await sql`SELECT * FROM positions ORDER BY created_at DESC`;
-    return NextResponse.json(result.rows);
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to fetch positions' }, { status: 500 });
@@ -14,6 +15,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { title, department, description, requirements } = await request.json();
+    const sql = neon(process.env.DATABASE_URL!);
     
     const result = await sql`
       INSERT INTO positions (title, department, description, requirements, created_at)
@@ -21,7 +23,7 @@ export async function POST(request: Request) {
       RETURNING id, title, department, description, requirements
     `;
 
-    return NextResponse.json(result.rows[0], { status: 201 });
+    return NextResponse.json(result[0], { status: 201 });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to create position' }, { status: 500 });

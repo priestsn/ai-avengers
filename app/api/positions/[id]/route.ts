@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
 
 export async function PUT(
@@ -7,6 +7,7 @@ export async function PUT(
 ) {
   try {
     const { title, department, description, requirements } = await request.json();
+    const sql = neon(process.env.DATABASE_URL!);
     
     const result = await sql`
       UPDATE positions
@@ -15,11 +16,11 @@ export async function PUT(
       RETURNING id, title, department, description, requirements
     `;
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return NextResponse.json({ error: 'Position not found' }, { status: 404 });
     }
 
-    return NextResponse.json(result.rows[0]);
+    return NextResponse.json(result[0]);
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json({ error: 'Failed to update position' }, { status: 500 });
@@ -31,9 +32,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const sql = neon(process.env.DATABASE_URL!);
     const result = await sql`DELETE FROM positions WHERE id = ${params.id}`;
     
-    if (result.rowCount === 0) {
+    if (result.length === 0) {
       return NextResponse.json({ error: 'Position not found' }, { status: 404 });
     }
 
