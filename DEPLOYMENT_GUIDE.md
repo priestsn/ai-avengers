@@ -34,6 +34,12 @@ git push origin main
 
 Vercel auto-triggererà il deploy dal repo GitHub. Aspetta il completamento (vedi dashboard).
 
+### 3.1 Impostare chiavi API AI (Gemini)
+1. Nel dashboard Vercel, vai a "Settings" → "Environment Variables"
+2. Aggiungi:
+   - `GOOGLE_API_KEY` (chiave di accesso a Google Generative Language / Gemini)
+   - opzionale: `OPENAI_API_KEY` (solo fallback se Google non raggiungibile)
+
 ### 4. Verificare il deployment
 1. Accedi all'URL pubblica fornita da Vercel (es. `harid-ai.vercel.app`)
 2. Testa:
