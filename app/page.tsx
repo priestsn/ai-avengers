@@ -41,6 +41,10 @@ export default function Home() {
   const [questionnaire, setQuestionnaire] = useState({ name: '', experience: '', skills: '', availability: '' });
   const [positions, setPositions] = useState<Position[]>(initialPositions);
   const [selectedPositionId, setSelectedPositionId] = useState<string>('1');
+  const [hrEmail, setHrEmail] = useState('');
+  const [hrPassword, setHrPassword] = useState('');
+  const [isHRAuthenticated, setIsHRAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState('');
   const [applications, setApplications] = useState<Application[]>([]);
   const [interviewSteps, setInterviewSteps] = useState<InterviewStep[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -306,19 +310,99 @@ export default function Home() {
     }
   };
 
+  const handleHRLogin = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (hrEmail.trim() === 'dev@mail.it' && hrPassword === 'admin') {
+      setIsHRAuthenticated(true);
+      setAuthError('');
+    } else {
+      setAuthError('Credenziali HR non valide.');
+      setIsHRAuthenticated(false);
+    }
+  };
+
+  const handleHRLogout = () => {
+    setIsHRAuthenticated(false);
+    setHrEmail('');
+    setHrPassword('');
+    setAuthError('');
+  };
+
   return (
     <main className="container">
       <style jsx global>{`
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: Inter, Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; color: #111827; }
-        .container { max-width: 980px; margin: 0 auto; padding: 1.25rem; }
-        .card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 1rem; margin-bottom: 1rem; }
-        .button { cursor: pointer; border: none; border-radius: 8px; padding: 0.65rem 1rem; color: #fff; background-color: #2563eb; font-weight: 700; margin-right: 0.5rem; }
-        .button.secondary { background: #6b7280; }
-        .input, .textarea, .select { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.6rem; margin-top: 0.4rem; margin-bottom: 0.8rem; }
-        .pre { background: #111827; color: #f3f4f6; padding: 0.75rem; border-radius: 8px; white-space: pre-wrap; }
-        .label { font-weight: 600; }
-        .section-header { margin-bottom: 0.8rem; }
+        body {
+          margin: 0;
+          font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          background: linear-gradient(130deg, #0f172a 0%, #1e3a8a 100%);
+          color: #e2e8f0;
+          min-height: 100vh;
+        }
+        .container {
+          max-width: 1080px;
+          margin: 0 auto;
+          padding: 2rem;
+        }
+        .card {
+          background: rgba(15, 23, 42, 0.9);
+          border-radius: 18px;
+          border: 1px solid rgba(148, 163, 184, 0.3);
+          padding: 1.25rem;
+          margin-bottom: 1.25rem;
+          box-shadow: 0 18px 32px rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(6px);
+        }
+        h1, h2, h3 {
+          margin: 0 0 0.75rem 0;
+          font-weight: 800;
+          color: #f8fafc;
+        }
+        p {
+          color: #cbd5e1;
+        }
+        .button {
+          cursor: pointer;
+          border: none;
+          border-radius: 10px;
+          padding: 0.75rem 1.15rem;
+          color: #ffffff;
+          background: linear-gradient(90deg, #4f46e5, #22d3ee);
+          font-weight: 700;
+          margin-right: 0.55rem;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          box-shadow: 0 10px 20px rgba(34, 211, 238, 0.35);
+        }
+        .button:hover { transform: translateY(-1px); box-shadow: 0 14px 22px rgba(34, 211, 238, 0.5); }
+        .button.secondary {
+          background: linear-gradient(90deg, #6b7280, #334155);
+          box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+        }
+        .input, .textarea, .select {
+          width: 100%;
+          border: 1px solid rgba(148, 163, 184, 0.4);
+          border-radius: 10px;
+          padding: 0.75rem;
+          margin-top: 0.4rem;
+          margin-bottom: 0.8rem;
+          background: rgba(15, 23, 42, 0.65);
+          color: #e2e8f0;
+          outline: none;
+        }
+        .input:focus, .textarea:focus, .select:focus {
+          border-color: #22d3ee;
+          box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.25);
+        }
+        .pre {
+          background: #020617;
+          color: #e2e8f0;
+          padding: 0.75rem;
+          border-radius: 10px;
+          white-space: pre-wrap;
+          border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+        .label { font-weight: 700; color: #f1f5f9; }
+        .section-header { margin-bottom: 0.8rem; color: #e2e8f0; }
       `}</style>
       <div className="card">
         <h1>🌟 Harid AI Recruiting Platform</h1>
@@ -386,22 +470,39 @@ export default function Home() {
       {role === 'hr' && (
         <div className="card">
           <h2 className="section-header">Area HR</h2>
-          <h3>Gestione posizioni</h3>
-          <PositionManager positions={positions} onCreate={createPosition} onUpdate={updatePosition} onDelete={deletePosition} />
-          <h3>Candidature</h3>
-          {applications.length === 0 && <p>Nessuna candidatura ancora.</p>}
-          {applications.map((application) => {
-            const position = positions.find((p) => p.id === application.positionId);
-            return (
-              <div key={application.id} style={{ border: '1px solid #ccc', borderRadius: 8, padding: 10, marginBottom: 10 }}>
-                <strong>{application.candidateName}</strong> - {position?.title || 'Posizione rimossa'}
-                <p>Stato: {application.status} - Punteggio: {application.score}</p>
-                <p>{application.report}</p>
-                <button className="button" onClick={() => updateApplicationStatus(application.id, 'approved')}>Approva</button>
-                <button className="button secondary" onClick={() => updateApplicationStatus(application.id, 'rejected')}>Rifiuta</button>
-              </div>
-            );
-          })}
+          {!isHRAuthenticated ? (
+            <div>
+              <p>Accesso limitato. Inserisci credenziali speciali.</p>
+              <form onSubmit={handleHRLogin} style={{ display: 'grid', gap: '0.75rem' }}>
+                <label className="label">Email</label>
+                <input className="input" type="email" value={hrEmail} onChange={(e) => setHrEmail(e.target.value)} placeholder="dev@mail.it" />
+                <label className="label">Password</label>
+                <input className="input" type="password" value={hrPassword} onChange={(e) => setHrPassword(e.target.value)} placeholder="admin" />
+                {authError && <p style={{ color: '#dc2626' }}>{authError}</p>}
+                <button className="button" type="submit">Login HR</button>
+              </form>
+            </div>
+          ) : (
+            <div>
+              <p style={{ marginBottom: 12 }}><strong>Sei connesso come HR</strong> <button className="button secondary" onClick={handleHRLogout}>Logout</button></p>
+              <h3>Gestione posizioni</h3>
+              <PositionManager positions={positions} onCreate={createPosition} onUpdate={updatePosition} onDelete={deletePosition} />
+              <h3>Candidature</h3>
+              {applications.length === 0 && <p>Nessuna candidatura ancora.</p>}
+              {applications.map((application) => {
+                const position = positions.find((p) => p.id === application.positionId);
+                return (
+                  <div key={application.id} style={{ border: '1px solid #ccc', borderRadius: 8, padding: 10, marginBottom: 10 }}>
+                    <strong>{application.candidateName}</strong> - {position?.title || 'Posizione rimossa'}
+                    <p>Stato: {application.status} - Punteggio: {application.score}</p>
+                    <p>{application.report}</p>
+                    <button className="button" onClick={() => updateApplicationStatus(application.id, 'approved')}>Approva</button>
+                    <button className="button secondary" onClick={() => updateApplicationStatus(application.id, 'rejected')}>Rifiuta</button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </main>
