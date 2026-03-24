@@ -6,6 +6,8 @@ type Application = { id: string; candidateName: string; positionId: string; ques
 
 type InterviewStep = { question: string; answer: string };
 
+type ChatMessage = { role: 'system' | 'assistant' | 'user'; content: string; };
+
 const initialPositions: Position[] = [
   { id: '1', title: 'Sviluppatore frontend', department: 'Engineering', description: 'Costruisci interfacce moderne e reattive.', requirements: ['React', 'Next.js', 'TypeScript'] },
   { id: '2', title: 'Data Analyst', department: 'Data', description: 'Analizza e interprete i dati aziendali.', requirements: ['SQL', 'Python', 'Visualizzazione dati'] },
@@ -46,12 +48,12 @@ export default function Home() {
   const [isHRAuthenticated, setIsHRAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
   const [applications, setApplications] = useState<Application[]>([]);
-  const [interviewSteps, setInterviewSteps] = useState<InterviewStep[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answerText, setAnswerText] = useState('');
+  const [interviewChat, setInterviewChat] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
   const [interviewing, setInterviewing] = useState(false);
   const [interviewEnded, setInterviewEnded] = useState(false);
   const [recruiterFeedback, setRecruiterFeedback] = useState<string>('Benvenuto, iniziamo il colloquio.');
+  const [isAwaitingReply, setIsAwaitingReply] = useState(false);
 
   const selectedPosition = useMemo(() => positions.find((p) => p.id === selectedPositionId) ?? null, [positions, selectedPositionId]);
 
@@ -122,101 +124,112 @@ export default function Home() {
 
   const startInterview = () => {
     setStep('interview');
-    setCurrentQuestionIndex(0);
-    setInterviewSteps([]);
     setInterviewing(true);
     setInterviewEnded(false);
-    setRecruiterFeedback('Il recruiter virtuale sta per iniziare.');
-    setTimeout(() => speakText('Ciao, sono Harid AI, il tuo recruiter AI. Iniziamo il colloquio.'), 200);
+    const initialPrompt = 'Ciao, sono Harid AI, il tuo interviewer intelligente. Iniziamo il colloquio con una breve presentazione.';
+    setInterviewChat([
+      { role: 'system', content: 'Sei un AI recruiter premuroso, basato su Gemini-style, che formula domande di colloquio e fornisce feedback.' },
+      { role: 'assistant', content: initialPrompt },
+    ]);
+    setRecruiterFeedback(initialPrompt);
+    speakText(initialPrompt);
   };
-
-  const nextQuestion = () => {
-    const q = pickAIQuestion(currentQuestionIndex, selectedPosition);
-    setRecruiterFeedback(q);
-    speakText(q);
-  };
-
-  useEffect(() => {
-    if (interviewing && !interviewEnded) {
-      nextQuestion();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [interviewing, currentQuestionIndex, interviewEnded]);
 
   const submitAnswer = async () => {
-    if (!answerText.trim()) return;
-    const nextSteps = [...interviewSteps, { question: recruiterFeedback, answer: answerText.trim() }];
-    setInterviewSteps(nextSteps);
-    setAnswerText('');
+    if (!chatInput.trim() || isAwaitingReply) return;
+    const userMessage = { role: 'user' as const, content: chatInput.trim() };
+    const updatedChat = [...interviewChat, userMessage];
+    setInterviewChat(updatedChat);
+    setChatInput('');
+    setIsAwaitingReply(true);
 
-    const isFinish = currentQuestionIndex >= 4 || nextSteps.length >= 6;
-    if (isFinish) {
-      const score = Math.max(60, Math.min(100, 70 + nextSteps.reduce((a, c) => a + c.answer.length / 30, 0)));
-      const summary = `Colloquio completato per ${questionnaire.name || 'il candidato'} su posizione ${selectedPosition?.title}. Punteggio stimato: ${Math.round(score)}.`;
-      const report = [
-        summary,
-        'Dettaglio risposte:',
-        ...nextSteps.map((s, i) => `${i + 1}. Q:${s.question} -> A:${s.answer}`),
-      ].join('\n');
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedChat,
+          position: selectedPosition,
+          questionnaire,
+        }),
+      });
 
-      const newApplication: Application = {
-        id: `app-${Date.now()}`,
-        candidateName: questionnaire.name || 'Candidato anonimo',
-        positionId: selectedPositionId,
-        questionnaire: { ...questionnaire },
-        score: Math.round(score),
-        report,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-      };
-
-      try {
-        const response = await fetch('/api/applications', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            candidateName: newApplication.candidateName,
-            positionId: newApplication.positionId,
-            questionnaire: newApplication.questionnaire,
-            score: newApplication.score,
-            report: newApplication.report,
-            status: newApplication.status,
-          }),
-        });
-
-        if (response.ok) {
-          const created = await response.json();
-          setApplications((prev) => [{
-            id: created.id,
-            candidateName: created.candidateName || created.candidate_name,
-            positionId: created.positionId || created.position_id,
-            questionnaire: created.questionnaire,
-            score: created.score,
-            report: created.report,
-            status: created.status,
-            createdAt: created.createdAt || created.created_at,
-          }, ...prev]);
-        } else {
-          console.error('Errore salvataggio candidatura');
-          setApplications((prev) => [newApplication, ...prev]);
-        }
-      } catch (error) {
-        console.error('Errore API candidatura:', error);
-        setApplications((prev) => [newApplication, ...prev]);
+      if (!response.ok) {
+        throw new Error('Errore generazione AI');
       }
 
-      setInterviewing(false);
-      setInterviewEnded(true);
-      setRecruiterFeedback('Colloquio concluso. Grazie per aver partecipato, invio report a HR.');
-      speakText('Ho raccolto abbastanza informazioni. Il colloquio è concluso e invio il report al team HR.');
-      return;
-    }
+      const data = await response.json();
+      const aiReply = (data?.content || 'Scusa, ho avuto un problema. Riprova').toString();
+      const assistantMessage = { role: 'assistant' as const, content: aiReply };
 
-    setCurrentQuestionIndex((p) => p + 1);
-    const follow = `Grazie, ho capito. Prossima domanda.`;
-    setRecruiterFeedback(follow);
-    speakText(follow);
-    setTimeout(() => setRecruiterFeedback(''), 700);
+      setInterviewChat((prev) => [...prev, assistantMessage]);
+      setRecruiterFeedback(aiReply);
+      speakText(aiReply);
+
+      const isInterviewEnded = aiReply.toLowerCase().includes('colloquio terminato') || aiReply.toLowerCase().includes('grazie per il colloquio');
+      if (isInterviewEnded) {
+        setInterviewing(false);
+        setInterviewEnded(true);
+
+        const score = Math.max(60, Math.min(100, 70 + interviewChat.filter((m) => m.role === 'user').length * 2));
+        const reportLines = interviewChat.map((m, idx) => `${idx + 1}. ${m.role.toUpperCase()}: ${m.content}`);
+        const report = `Colloquio AI concluso.
+Punteggio stimato: ${score}.
+
+${reportLines.join('\n')}`;
+
+        const newApplication: Application = {
+          id: `app-${Date.now()}`,
+          candidateName: questionnaire.name || 'Candidato anonimo',
+          positionId: selectedPositionId,
+          questionnaire: { ...questionnaire },
+          score,
+          report,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+        };
+
+        try {
+          const saveRes = await fetch('/api/applications', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              candidateName: newApplication.candidateName,
+              positionId: newApplication.positionId,
+              questionnaire: newApplication.questionnaire,
+              score: newApplication.score,
+              report: newApplication.report,
+              status: newApplication.status,
+            }),
+          });
+
+          if (saveRes.ok) {
+            const created = await saveRes.json();
+            setApplications((prev) => [{
+              id: created.id,
+              candidateName: created.candidateName || created.candidate_name,
+              positionId: created.positionId || created.position_id,
+              questionnaire: created.questionnaire,
+              score: created.score,
+              report: created.report,
+              status: created.status,
+              createdAt: created.createdAt || created.created_at,
+            }, ...prev]);
+          } else {
+            console.error('Errore salvataggio candidatura: ', saveRes.status);
+            setApplications((prev) => [newApplication, ...prev]);
+          }
+        } catch (error) {
+          console.error('Errore API candidatura:', error);
+          setApplications((prev) => [newApplication, ...prev]);
+        }
+      }
+    } catch (error) {
+      console.error('Errore AI:', error);
+      setRecruiterFeedback('Errore di connessione con AI. Riprova tra poco.');
+    } finally {
+      setIsAwaitingReply(false);
+    }
   };
 
   const createPosition = async (position: Position) => {
@@ -453,17 +466,30 @@ export default function Home() {
         <div className="card">
           <h2 className="section-header">3) Colloquio live con Harid AI</h2>
           <p><strong>Posizione:</strong> {selectedPosition?.title}</p>
-          <p><strong>Status:</strong> {interviewEnded ? 'Terminato' : 'In corso'}</p>
-          <div className="pre">{recruiterFeedback || 'In attesa di domanda...'}</div>
-          {interviewing && !interviewEnded && (
-            <>
-              <textarea className="textarea" value={answerText} onChange={(e) => setAnswerText(e.target.value)} placeholder="Rispondi qui..." rows={4}/>
-              <button className="button" onClick={submitAnswer}>Invia risposta</button>
-            </>
+          <p><strong>Status:</strong> {interviewEnded ? 'Terminato' : interviewing ? 'In corso' : 'In pausa'}</p>
+
+          <div className="chat-window" style={{ maxHeight: '320px', overflowY: 'auto', marginBottom: '1rem' }}>
+            {interviewChat.length === 0 && <p>Nessuna conversazione ancora.</p>}
+            {interviewChat.map((msg, idx) => (
+              <div key={idx} style={{ marginBottom: '0.8rem' }}>
+                <strong style={{ color: msg.role === 'assistant' ? '#38bdf8' : '#a78bfa' }}>
+                  {msg.role === 'assistant' ? 'Harid AI:' : msg.role === 'user' ? 'Tu:' : 'Sistema:'}
+                </strong>
+                <p style={{ margin: '0.2rem 0 0.4rem', whiteSpace: 'pre-wrap' }}>{msg.content}</p>
+              </div>
+            ))}
+          </div>
+
+          {!interviewEnded && (
+            <div>
+              <textarea className="textarea" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Scrivi la tua risposta qui..." rows={4} />
+              <button className="button" onClick={submitAnswer} disabled={!interviewing || isAwaitingReply || !chatInput.trim()}>
+                {isAwaitingReply ? 'Aspetta...' : 'Invia risposta'}
+              </button>
+            </div>
           )}
-          {interviewEnded && <p>Colloquio concluso. Report inviato a HR.</p>}
-          <h3 style={{ marginTop: '1rem' }}>Chat Log</h3>
-          <div className="pre">{interviewSteps.map((s, idx) => `${idx + 1}. ${s.question}\nRisposta: ${s.answer}`).join('\n\n') || 'Nessun messaggio ancora.'}</div>
+
+          {interviewEnded && <p>Colloquio concluso. Grazie per aver partecipato!</p>}
         </div>
       )}
 
