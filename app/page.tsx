@@ -323,13 +323,24 @@ ${reportLines.join('\n')}`;
     }
   };
 
-  const handleHRLogin = (event: React.FormEvent) => {
+  const handleHRLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (hrEmail.trim() === 'dev@mail.it' && hrPassword === 'admin') {
-      setIsHRAuthenticated(true);
-      setAuthError('');
-    } else {
-      setAuthError('Credenziali HR non valide.');
+    setAuthError('');
+    try {
+      const res = await fetch('/api/hr/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: hrEmail.trim(), password: hrPassword }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setIsHRAuthenticated(true);
+      } else {
+        setAuthError(data.error || 'Credenziali HR non valide.');
+        setIsHRAuthenticated(false);
+      }
+    } catch {
+      setAuthError('Errore di connessione. Riprova.');
       setIsHRAuthenticated(false);
     }
   };
