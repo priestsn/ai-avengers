@@ -1,1 +1,28 @@
-{"name":"ai-avengers","version":"1.0.0","description":"AI-powered interview platform with Harid AI","scripts":{"dev":"next dev","build":"next build","start":"next start","lint":"next lint","share":"npx localtunnel --port 3000 --subdomain lia-ai-recruiting"},"dependencies":{"@neondatabase/serverless":"^1.0.2","axios":"^1.6.0","firebase":"^10.7.0","next":"^14.0.0","react":"^18.2.0","react-dom":"^18.2.0","tailwindcss":"^3.3.0"},"devDependencies":{"@types/react":"19.2.14","autoprefixer":"^10.4.16","localtunnel":"^2.0.1","postcss":"^8.4.31","typescript":"6.0.2"}}
+{
+  "name": "ai-avengers",
+  "version": "1.1.0",
+  "description": "AI-powered interview platform with Harid AI — candidate screening, live AI interviews, HR dashboard.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "axios": "^1.6.0",
+    "firebase": "^10.7.0",
+    "next": "14.2.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "typescript": "5.6.3"
+  }
+}
