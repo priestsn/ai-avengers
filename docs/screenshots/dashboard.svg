@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#0d1529"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+
+  <!-- Navbar -->
+  <rect width="1280" height="60" fill="#0d1629" opacity="0.95"/>
+  <circle cx="32" cy="30" r="12" fill="#3b82f6"/>
+  <text x="50" y="36" font-family="Arial,sans-serif" font-size="18" fill="white" font-weight="bold">AI Avengers</text>
+  <text x="1100" y="36" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Dashboard HR</text>
+  <rect x="1180" y="16" width="80" height="28" rx="6" fill="#1e293b"/>
+  <text x="1220" y="34" font-family="Arial,sans-serif" font-size="12" fill="#ef4444" text-anchor="middle">Logout</text>
+
+  <!-- Stats Row -->
+  <rect x="20" y="80" width="280" height="80" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="40" y="108" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Totale Colloqui</text>
+  <text x="40" y="140" font-family="Arial,sans-serif" font-size="30" fill="white" font-weight="bold">24</text>
+
+  <rect x="320" y="80" width="280" height="80" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="340" y="108" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Consigliati</text>
+  <text x="340" y="140" font-family="Arial,sans-serif" font-size="30" fill="#22c55e" font-weight="bold">11</text>
+
+  <rect x="620" y="80" width="280" height="80" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="640" y="108" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Da Valutare</text>
+  <text x="640" y="140" font-family="Arial,sans-serif" font-size="30" fill="#f59e0b" font-weight="bold">8</text>
+
+  <rect x="920" y="80" width="280" height="80" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="940" y="108" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Non Consigliati</text>
+  <text x="940" y="140" font-family="Arial,sans-serif" font-size="30" fill="#ef4444" font-weight="bold">5</text>
+
+  <!-- Table Header -->
+  <rect x="20" y="180" width="1240" height="44" rx="8" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="40" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">CANDIDATO</text>
+  <text x="300" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">POSIZIONE</text>
+  <text x="580" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">SKILLS</text>
+  <text x="700" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">SPEECH</text>
+  <text x="820" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">TOTALE</text>
+  <text x="940" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">RACCOMANDAZIONE</text>
+  <text x="1150" y="207" font-family="Arial,sans-serif" font-size="13" fill="#64748b" font-weight="bold">DETTAGLIO</text>
+
+  <!-- Row 1 - Consigliato -->
+  <rect x="20" y="230" width="1240" height="54" rx="6" fill="#0f172a"/>
+  <text x="40" y="258" font-family="Arial,sans-serif" font-size="14" fill="white" font-weight="bold">Marco Bianchi</text>
+  <text x="40" y="276" font-family="Arial,sans-serif" font-size="12" fill="#64748b">marco@email.com</text>
+  <text x="300" y="262" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Sviluppatore Full Stack</text>
+  <text x="580" y="262" font-family="Arial,sans-serif" font-size="14" fill="white">82</text>
+  <text x="700" y="262" font-family="Arial,sans-serif" font-size="14" fill="white">75</text>
+  <text x="820" y="262" font-family="Arial,sans-serif" font-size="18" fill="white" font-weight="bold">79</text>
+  <rect x="940" y="244" width="130" height="26" rx="13" fill="#14532d"/>
+  <text x="1005" y="261" font-family="Arial,sans-serif" font-size="12" fill="#22c55e" text-anchor="middle">✓ consigliato</text>
+  <rect x="1150" y="244" width="90" height="26" rx="6" fill="#1e3a5f"/>
+  <text x="1195" y="261" font-family="Arial,sans-serif" font-size="12" fill="#3b82f6" text-anchor="middle">Vedi →</text>
+
+  <!-- Row 2 - Da valutare -->
+  <rect x="20" y="290" width="1240" height="54" rx="6" fill="#0a0f1e"/>
+  <text x="40" y="318" font-family="Arial,sans-serif" font-size="14" fill="white" font-weight="bold">Laura Ferrari</text>
+  <text x="40" y="336" font-family="Arial,sans-serif" font-size="12" fill="#64748b">laura@email.com</text>
+  <text x="300" y="322" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">UX Designer Senior</text>
+  <text x="580" y="322" font-family="Arial,sans-serif" font-size="14" fill="white">58</text>
+  <text x="700" y="322" font-family="Arial,sans-serif" font-size="14" fill="white">65</text>
+  <text x="820" y="322" font-family="Arial,sans-serif" font-size="18" fill="white" font-weight="bold">61</text>
+  <rect x="940" y="304" width="130" height="26" rx="13" fill="#451a03"/>
+  <text x="1005" y="321" font-family="Arial,sans-serif" font-size="12" fill="#f59e0b" text-anchor="middle">◐ da valutare</text>
+  <rect x="1150" y="304" width="90" height="26" rx="6" fill="#1e3a5f"/>
+  <text x="1195" y="321" font-family="Arial,sans-serif" font-size="12" fill="#3b82f6" text-anchor="middle">Vedi →</text>
+
+  <!-- Row 3 - Non consigliato -->
+  <rect x="20" y="350" width="1240" height="54" rx="6" fill="#0f172a"/>
+  <text x="40" y="378" font-family="Arial,sans-serif" font-size="14" fill="white" font-weight="bold">Giovanni Russo</text>
+  <text x="40" y="396" font-family="Arial,sans-serif" font-size="12" fill="#64748b">giovanni@email.com</text>
+  <text x="300" y="382" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Backend Engineer</text>
+  <text x="580" y="382" font-family="Arial,sans-serif" font-size="14" fill="white">28</text>
+  <text x="700" y="382" font-family="Arial,sans-serif" font-size="14" fill="white">35</text>
+  <text x="820" y="382" font-family="Arial,sans-serif" font-size="18" fill="white" font-weight="bold">30</text>
+  <rect x="940" y="364" width="140" height="26" rx="13" fill="#450a0a"/>
+  <text x="1010" y="381" font-family="Arial,sans-serif" font-size="12" fill="#ef4444" text-anchor="middle">✗ non consigliato</text>
+  <rect x="1150" y="364" width="90" height="26" rx="6" fill="#1e3a5f"/>
+  <text x="1195" y="381" font-family="Arial,sans-serif" font-size="12" fill="#3b82f6" text-anchor="middle">Vedi →</text>
+
+  <!-- Row 4 -->
+  <rect x="20" y="410" width="1240" height="54" rx="6" fill="#0a0f1e"/>
+  <text x="40" y="438" font-family="Arial,sans-serif" font-size="14" fill="white" font-weight="bold">Sofia Conti</text>
+  <text x="40" y="456" font-family="Arial,sans-serif" font-size="12" fill="#64748b">sofia@email.com</text>
+  <text x="300" y="442" font-family="Arial,sans-serif" font-size="13" fill="#94a3b8">Product Manager</text>
+  <text x="580" y="442" font-family="Arial,sans-serif" font-size="14" fill="white">74</text>
+  <text x="700" y="442" font-family="Arial,sans-serif" font-size="14" fill="white">80</text>
+  <text x="820" y="442" font-family="Arial,sans-serif" font-size="18" fill="white" font-weight="bold">76</text>
+  <rect x="940" y="424" width="130" height="26" rx="13" fill="#14532d"/>
+  <text x="1005" y="441" font-family="Arial,sans-serif" font-size="12" fill="#22c55e" text-anchor="middle">✓ consigliato</text>
+  <rect x="1150" y="424" width="90" height="26" rx="6" fill="#1e3a5f"/>
+  <text x="1195" y="441" font-family="Arial,sans-serif" font-size="12" fill="#3b82f6" text-anchor="middle">Vedi →</text>
+</svg>

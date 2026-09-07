@@ -1,0 +1,25 @@
+packages:
+  "framer-motion": "For stunning page transitions, modal animations, and micro-interactions"
+  "clsx": "For conditional tailwind class merging"
+  "tailwind-merge": "To efficiently merge tailwind classes without conflicts"
+  "date-fns": "For formatting dates in the HR dashboard"
+  "react-hook-form": "For robust and performant form state management"
+  "@hookform/resolvers": "For Zod schema validation with react-hook-form"
+  "zod": "For client-side schema validation"
+
+images:
+  - path: "artifacts/video-interview/public/images/hero-hr.png"
+    description: "Abstract, deep navy and slate geometric mesh with subtle blue glowing lines, professional corporate tech feel"
+    aspect_ratio: "16:9"
+  - path: "artifacts/video-interview/public/images/hero-candidate.png"
+    description: "Futuristic dark abstract background with glowing cyan and indigo soft lights, modern software engineering vibe"
+    aspect_ratio: "16:9"
+  - path: "artifacts/video-interview/public/images/success-glow.png"
+    description: "A soft, radiant emerald green and deep blue gradient mesh background, indicating success and high score"
+    aspect_ratio: "16:9"
+
+notes:
+  - The API expects JWT tokens in the Authorization header for protected routes.
+  - Auth token will be stored in localStorage as 'hr_token'.
+  - WebRTC video stream is handled entirely client-side without external STUN/TURN servers for this demo.
+  - Hooks from @workspace/api-client-react are used with manual header injection.

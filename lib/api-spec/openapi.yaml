@@ -1,0 +1,469 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Video Interview Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: positions
+    description: Job position operations
+  - name: interviews
+    description: Interview operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: loginHR
+      tags: [auth]
+      summary: HR login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current HR user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HRUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /positions:
+    get:
+      operationId: listPositions
+      tags: [positions]
+      summary: List all job positions
+      responses:
+        "200":
+          description: List of positions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Position"
+    post:
+      operationId: createPosition
+      tags: [positions]
+      summary: Create a new position (HR only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePositionRequest"
+      responses:
+        "201":
+          description: Position created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Position"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /positions/{id}:
+    get:
+      operationId: getPosition
+      tags: [positions]
+      summary: Get a position by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Position details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Position"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deletePosition
+      tags: [positions]
+      summary: Delete a position (HR only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Position deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /interviews:
+    get:
+      operationId: listInterviews
+      tags: [interviews]
+      summary: List all interviews (HR only)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of interviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InterviewWithPosition"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createInterview
+      tags: [interviews]
+      summary: Submit a new interview result
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInterviewRequest"
+      responses:
+        "201":
+          description: Interview created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interview"
+
+  /interviews/{id}:
+    get:
+      operationId: getInterview
+      tags: [interviews]
+      summary: Get interview details (HR only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Interview details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterviewWithPosition"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteInterview
+      tags: [interviews]
+      summary: Delete an interview (HR only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Interview deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/HRUser"
+      required:
+        - token
+        - user
+
+    HRUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - email
+        - name
+
+    Position:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        techStack:
+          type: string
+        questions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - description
+        - techStack
+        - questions
+        - createdAt
+
+    CreatePositionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        techStack:
+          type: string
+        questions:
+          type: array
+          items:
+            type: string
+          minItems: 3
+          maxItems: 8
+      required:
+        - title
+        - description
+        - techStack
+        - questions
+
+    Interview:
+      type: object
+      properties:
+        id:
+          type: integer
+        positionId:
+          type: integer
+        candidateName:
+          type: string
+        candidateEmail:
+          type: string
+        preAnswers:
+          type: object
+          additionalProperties: true
+        totalScore:
+          type: integer
+        skillsScore:
+          type: integer
+        speechScore:
+          type: integer
+        confidenceScore:
+          type: integer
+        fillerWordCount:
+          type: integer
+        wordCount:
+          type: integer
+        status:
+          type: string
+          enum: [pending, completed, rejected]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - positionId
+        - candidateName
+        - candidateEmail
+        - totalScore
+        - skillsScore
+        - speechScore
+        - confidenceScore
+        - status
+        - createdAt
+
+    InterviewWithPosition:
+      allOf:
+        - $ref: "#/components/schemas/Interview"
+        - type: object
+          properties:
+            positionTitle:
+              type: string
+          required:
+            - positionTitle
+
+    CreateInterviewRequest:
+      type: object
+      properties:
+        positionId:
+          type: integer
+        candidateName:
+          type: string
+        candidateEmail:
+          type: string
+        preAnswers:
+          type: object
+          additionalProperties: true
+        totalScore:
+          type: integer
+        skillsScore:
+          type: integer
+        speechScore:
+          type: integer
+        confidenceScore:
+          type: integer
+        fillerWordCount:
+          type: integer
+        wordCount:
+          type: integer
+      required:
+        - positionId
+        - candidateName
+        - candidateEmail
+        - totalScore
+        - skillsScore
+        - speechScore
+        - confidenceScore

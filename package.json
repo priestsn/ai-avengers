@@ -1,28 +1,16 @@
 {
-  "name": "ai-avengers",
-  "version": "1.1.0",
-  "description": "AI-powered interview platform with Harid AI — candidate screening, live AI interviews, HR dashboard.",
+  "name": "workspace",
+  "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "typecheck:libs": "tsc --build",
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
-  "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
-    "axios": "^1.6.0",
-    "firebase": "^10.7.0",
-    "next": "14.2.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tailwindcss": "^3.3.0"
-  },
+  "private": true,
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "typescript": "5.6.3"
+    "typescript": "~5.9.2",
+    "prettier": "^3.8.1"
   }
 }
