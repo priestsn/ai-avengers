@@ -28,11 +28,11 @@
 
 *Il dashboard mostra tutti i colloqui completati con punteggio totale, raccomandazione colorata (verde/giallo/rosso) e accesso al report dettagliato.*
 
-### Colloquio con Harid AI — Interfaccia vocale
+### Video-colloquio con Harid AI — chiamata live
 
-![Colloquio Harid AI](docs/screenshots/interview.svg)
+![Video-colloquio Harid AI](docs/screenshots/interview.svg)
 
-*Durante il colloquio il candidato interagisce vocalmente con Harid AI: il sistema ascolta, elabora e risponde in voce italiana in tempo reale.*
+*Il colloquio avviene in videochiamata: il candidato condivide camera e microfono, Harid AI conduce il colloquio in voce italiana in tempo reale con trascrizione live e valutazione Gemini.*
 
 ---
 
@@ -226,7 +226,7 @@ ai-avengers/
 
 ```bash
 # Clona il repository
-git clone https://github.com/TUO_USERNAME/ai-avengers.git
+git clone https://github.com/priestsn/ai-avengers.git
 cd ai-avengers
 
 # Installa le dipendenze
@@ -625,7 +625,7 @@ git config user.name "Il Tuo Nome"
 git config user.email "tua@email.com"
 
 # Aggiungi il remote (sostituisci con la tua repo)
-git remote add origin https://github.com/TUO_USERNAME/ai-avengers.git
+git remote add origin https://github.com/priestsn/ai-avengers.git
 
 # Primo commit e push
 git add .
